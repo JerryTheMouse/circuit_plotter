@@ -80,11 +80,13 @@
   <ItemGroup>
     <ClCompile Include="ccc_msw.cpp" />
     <ClCompile Include="ccc_shap.cpp" />
+    <ClCompile Include="elements.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ccc_msw.h" />
     <ClInclude Include="ccc_shap.h" />
+    <ClInclude Include="elements.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

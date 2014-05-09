@@ -24,12 +24,18 @@
     <ClCompile Include="ccc_msw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="elements.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ccc_msw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ccc_shap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="elements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
