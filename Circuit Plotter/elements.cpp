@@ -2,12 +2,18 @@
 #include<math.h>
 #include <vector>
 
-void rotate(Point*& p,float angle){
-	float new_x = p->get_x()*cos(angle) - p->get_y()*sin(angle);
-	float new_y = p->get_x()*sin(angle) + p->get_y()*cos(angle);
+void rotate(Point*& p,float angle,Point* axis){
+	float new_x =axis->get_x() + ( (p->get_x() -axis->get_x()) *cos(angle) - (p->get_y()- axis->get_y())*sin(angle));
+	float new_y = axis->get_y() + ((p->get_x() - axis->get_x()) *sin(angle) + (p->get_y() - axis->get_y())*cos(angle));
+
 	p = new Point(new_x, new_y);
 }
-Element::Element(string u) :unit(u){
+Element::Element(Point start, Point end, float v,string u) :unit(u){
+	start_point = start;
+	end_point = end;
+	value = v;
+	calculate_length();
+	calculate_angle_with_x();
 };
 
 Point Element::get_start_point() { return start_point; }
@@ -27,21 +33,16 @@ void Element::calculate_angle_with_x(){
 	float dy = end_point.get_y() - start_point.get_y();
 	angle = atan2(dy , dx);
 }
-Resistance::Resistance(Point start,Point end, float v) :Element("Kohm"){
-	start_point = start;
-	end_point = end;
-	value = v;
+Resistance::Resistance(Point start,Point end, float v) :Element(start,end,v,"Kohm"){
+
 
 };
 void Resistance::draw(){
 };
 
-Capacitor::Capacitor(Point start, Point end,float v) :Element("nF"){
-	start_point = start;
-	end_point = end;
-	value = v;
-	calculate_length();
-	calculate_angle_with_x();
+Capacitor::Capacitor(Point start, Point end, float v) :Element(start, end, v, "nF"){
+
+	
 
 };
 void Capacitor::draw(){
@@ -84,7 +85,7 @@ void Capacitor::draw(){
 	points_to_rotate.push_back(&wire_2_start);
 	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
 	{
-		rotate(**it,angle);
+		rotate(**it,angle,wire_1_start);
 	}
 
 	// Now we will begin the Drawing..
@@ -95,17 +96,49 @@ void Capacitor::draw(){
 	cwin << wire_1 << first_side << second_side << wire_2;
 
 };
-Coil::Coil(Point start, Point end, float v) :Element("mH"){
-	start_point = start;
-	end_point = end;
-	value = v;
+Coil::Coil(Point start, Point end, float v) :Element(start, end, v,"mH"){
+
 };
 void Coil::draw(){
 };
-VoltageSource::VoltageSource(Point start, Point end, float v) :Element("V"){
-	start_point = start;
-	end_point = end;
-	value = v;
+VoltageSource::VoltageSource(Point start, Point end, float v) :Element(start, end, v,"V"){
+
 };
 void VoltageSource::draw(){
+	vector<Point**>points_to_rotate;
+	float circle_radius = 0.8;
+	float wire_length = (length - 2 * circle_radius) / 2.0;
+
+	//Now we will calculate the first piece of wire points
+	// Note we won't rotate wire_1_start because it's the start of the element
+	Point *wire_1_start = new Point(start_point);
+	Point* wire_1_end = new Point(start_point);
+	wire_1_end->move(wire_length, 0);
+	points_to_rotate.push_back(&wire_1_end);
+
+	//Now we will calculate the first side of capacitor points
+	Point* circle_center = new Point(*wire_1_end);
+	circle_center->move(circle_radius,0);
+	points_to_rotate.push_back(&circle_center);
+
+
+
+	//Now we will calculate the second piece of wire points
+	// Note we won't rotate wire_2_end because it's the start of the element
+	Point *wire_2_start = new Point(*circle_center);
+	wire_2_start->move(circle_radius,0);
+	Point* wire_2_end = new Point(end_point);
+	points_to_rotate.push_back(&wire_2_start);
+
+	// Now we rotate them
+	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
+	{
+		rotate(**it, angle, wire_1_start);
+	}
+
+	// Now we will begin the Drawing..
+	Line wire_1(*wire_1_start, *wire_1_end);
+	Circle source(*circle_center, circle_radius);
+	Line wire_2(*wire_2_start, *wire_2_end);
+	cwin << wire_1 << source  << wire_2;
 };

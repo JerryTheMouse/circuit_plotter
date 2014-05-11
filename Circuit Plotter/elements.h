@@ -10,7 +10,7 @@ public:
 
 	virtual void draw() = 0; // Pure Virtual Function will not allow inialization 
 protected:
-	Element(string u);
+	Element(Point start, Point end, float v,string u);
 
 	void calculate_angle_with_x();
 	float angle;
