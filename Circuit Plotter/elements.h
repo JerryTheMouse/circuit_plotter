@@ -1,48 +1,53 @@
 #ifndef ELEMENTS_H
 #define ELEMENTS_H
 #include "ccc_msw.h"
-enum orientation { up, down, left, right };
 class Element{
 public:
 	Point get_start_point();
 	Point get_end_point();
-
 	string get_unit();
 	float get_value();
-	virtual void draw(bool  simulate = false) = 0; // Pure Virtual Function will not allow inialization 
+
+	virtual void draw() = 0; // Pure Virtual Function will not allow inialization 
 protected:
 	Element(string u);
+
+	void calculate_angle_with_x();
+	float angle;
+
 	Point start_point, end_point;
 	float value;
-	orientation orient;
+
+	void calculate_length();
+	float length;
 	const string unit;
 
 };
 class Resistance :public Element {
 public:
 
-	Resistance(Point p, float v, orientation o);
-	void draw(bool  simulate = false);
+	Resistance(Point start,Point end, float v );
+	void draw();
 };
 class Capacitor :public Element {
 public:
 
-	Capacitor(Point p, float v, orientation o);
-	void draw(bool  simulate = false);
+	Capacitor(Point start, Point end, float v);
+	void draw();
 
 };
 class Coil :public Element {
 public:
 
-	Coil(Point p, float v, orientation o);
-	void draw(bool  simulate = false);
+	Coil(Point start, Point end, float v);
+	void draw();
 
 };
 class VoltageSource :public Element {
 public:
 
-	VoltageSource(Point p, float v, orientation o);
-	void draw(bool  simulate = false);
+	VoltageSource(Point start, Point end, float v);
+	void draw();
 
 };
 #endif

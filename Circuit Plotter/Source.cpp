@@ -1,8 +1,10 @@
 #include "elements.h"
 int ccc_win_main(){
-	Point p(2, 3);
-	cwin << p;
-	Element *e = new Resistance(p, 2.5, orientation::up);
+	Point p(0, 0);
+	Point p2(3, 6);
 
+	Capacitor c(p,p2,2.5);
+
+	c.draw();
 	return 0;
 }
