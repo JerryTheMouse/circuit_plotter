@@ -23,9 +23,9 @@ void Element::calculate_length(){
 }
 
 void Element::calculate_angle_with_x(){
-	float dx = start_point.get_x() - end_point.get_x();
-	float dy = start_point.get_y() - end_point.get_y();
-	angle = atan(dy / dx);
+	float dx = end_point.get_x() - start_point.get_x();
+	float dy = end_point.get_y() - start_point.get_y();
+	angle = atan2(dy , dx);
 }
 Resistance::Resistance(Point start,Point end, float v) :Element("Kohm"){
 	start_point = start;
@@ -45,7 +45,7 @@ Capacitor::Capacitor(Point start, Point end,float v) :Element("nF"){
 
 };
 void Capacitor::draw(){
-	vector<Point*>points_to_rotate;
+	vector<Point**>points_to_rotate;
 	float element_width = 0.5;
 	float element_height = 1.0;
 	float wire_length = (length - element_width) / 2.0;
@@ -55,7 +55,7 @@ void Capacitor::draw(){
 	Point *wire_1_start = new Point(start_point);
 	Point* wire_1_end = new Point( start_point);
 	wire_1_end->move(wire_length, 0);
-	points_to_rotate.push_back(wire_1_end);
+	points_to_rotate.push_back(&wire_1_end);
 
 	//Now we will calculate the first side of capacitor points
 	Point* first_side_top  = new Point(*wire_1_end);
@@ -63,8 +63,8 @@ void Capacitor::draw(){
 	Point* first_side_bottom = new Point(*wire_1_end);
 	first_side_bottom->move(0, -element_height / 2);
 
-	points_to_rotate.push_back(first_side_top);
-	points_to_rotate.push_back(first_side_bottom);
+	points_to_rotate.push_back(&first_side_top);
+	points_to_rotate.push_back(&first_side_bottom);
 
 	//Now we will calculate the second side of capacitor points
 
@@ -73,18 +73,18 @@ void Capacitor::draw(){
 	Point* second_side_bottom = new Point(*first_side_bottom);
 	second_side_bottom->move(element_width, 0);
 
-	points_to_rotate.push_back(second_side_top);
-	points_to_rotate.push_back(second_side_bottom);
+	points_to_rotate.push_back(&second_side_top);
+	points_to_rotate.push_back(&second_side_bottom);
 
 	//Now we will calculate the second piece of wire points
 	// Note we won't rotate wire_2_end because it's the start of the element
 	Point *wire_2_start = new Point(*second_side_top);
 	wire_2_start->move(0, -element_height / 2);
 	Point* wire_2_end = new Point(end_point);
-	points_to_rotate.push_back(wire_2_start);
-	for (std::vector<Point*>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
+	points_to_rotate.push_back(&wire_2_start);
+	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
 	{
-		rotate(*it,angle);
+		rotate(**it,angle);
 	}
 
 	// Now we will begin the Drawing..
@@ -92,7 +92,6 @@ void Capacitor::draw(){
 	Line first_side(*first_side_top, *first_side_bottom);
 	Line second_side(*second_side_top, *second_side_bottom);
 	Line wire_2(*wire_2_start, *wire_2_end);
-	cwin << *wire_1_end;
 	cwin << wire_1 << first_side << second_side << wire_2;
 
 };
