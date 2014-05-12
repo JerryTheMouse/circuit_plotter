@@ -1,14 +1,19 @@
 #ifndef ELEMENTS_H
 #define ELEMENTS_H
 #include "ccc_msw.h"
+
+void rotate(Point*& p, float angle, Point* axis);
+void draw_partial_circle(Point center, float radius, float start_angle, float end_angle);
+
 class Element{
+
 public:
 	Point get_start_point();
 	Point get_end_point();
 	string get_unit();
 	float get_value();
 
-	virtual void draw() = 0; // Pure Virtual Function will not allow inialization 
+	virtual void draw() = 0; // Pure Virtual Function will not allow initialization 
 protected:
 	Element(Point start, Point end, float v,string u);
 
