@@ -1,5 +1,4 @@
 #include "elements.h"
-#define PI 3.1428571428571428571
 
 int ccc_win_main(){
 	Point p1(0, 0);
@@ -23,23 +22,8 @@ int ccc_win_main(){
 	c2.draw();
 	c3.draw();
 	c4.draw();
-	float radius = 0.4;
-	float dx = sqrt(2 * radius*radius);
-	Point wire_1_start (0, -5);
-	Point wire_1_end(wire_1_start);
-	wire_1_end.move(3, 0);
-	Line wire(wire_1_end, wire_1_start);
-	cwin << wire;
-
-	Point coil_center(wire_1_end);
-	coil_center.move(0, -radius);
-
-	draw_partial_circle(coil_center, radius, -0.25*PI, PI/2);
-
-	for (int i = 0; i < 1; i++)
-	{
-		Point * test = new Point(0, -1);
-
-	}
+	Point p7(-5, -5);
+	Coil  co1(p6, p7, 0.8);
+	co1.draw();
 	return 0;
 }

@@ -2,11 +2,11 @@
 #include<math.h>
 #include <vector>
 
-void rotate(Point*& p,float angle,Point* axis){
-	float new_x =axis->get_x() + ( (p->get_x() -axis->get_x()) *cos(angle) - (p->get_y()- axis->get_y())*sin(angle));
-	float new_y = axis->get_y() + ((p->get_x() - axis->get_x()) *sin(angle) + (p->get_y() - axis->get_y())*cos(angle));
+void rotate(Point& p,float angle,Point* axis){
+	float new_x =axis->get_x() + ( (p.get_x() -axis->get_x()) *cos(angle) - (p.get_y()- axis->get_y())*sin(angle));
+	float new_y = axis->get_y() + ((p.get_x() - axis->get_x()) *sin(angle) + (p.get_y() - axis->get_y())*cos(angle));
 
-	p = new Point(new_x, new_y);
+	p =  Point(new_x, new_y);
 }
 
 void draw_partial_circle(Point center, float radius, float start_angle, float end_angle){
@@ -19,7 +19,7 @@ void draw_partial_circle(Point center, float radius, float start_angle, float en
 	{
 		Point* p = new Point(center);
 		p->move(radius, 0);
-		rotate(p, angle, &center);
+		rotate(*p, angle, &center);
 
 		if (i != 0)
 		{
@@ -71,7 +71,7 @@ Capacitor::Capacitor(Point start, Point end, float v) :Element(start, end, v, "n
 
 };
 void Capacitor::draw(){
-	vector<Point**>points_to_rotate;
+	vector<Point*>points_to_rotate;
 	float element_width = 0.5;
 	float element_height = 1.0;
 	float wire_length = (length - element_width) / 2.0;
@@ -81,7 +81,7 @@ void Capacitor::draw(){
 	Point *wire_1_start = new Point(start_point);
 	Point* wire_1_end = new Point( start_point);
 	wire_1_end->move(wire_length, 0);
-	points_to_rotate.push_back(&wire_1_end);
+	points_to_rotate.push_back(wire_1_end);
 
 	//Now we will calculate the first side of capacitor points
 	Point* first_side_top  = new Point(*wire_1_end);
@@ -89,8 +89,8 @@ void Capacitor::draw(){
 	Point* first_side_bottom = new Point(*wire_1_end);
 	first_side_bottom->move(0, -element_height / 2);
 
-	points_to_rotate.push_back(&first_side_top);
-	points_to_rotate.push_back(&first_side_bottom);
+	points_to_rotate.push_back(first_side_top);
+	points_to_rotate.push_back(first_side_bottom);
 
 	//Now we will calculate the second side of capacitor points
 
@@ -99,16 +99,16 @@ void Capacitor::draw(){
 	Point* second_side_bottom = new Point(*first_side_bottom);
 	second_side_bottom->move(element_width, 0);
 
-	points_to_rotate.push_back(&second_side_top);
-	points_to_rotate.push_back(&second_side_bottom);
+	points_to_rotate.push_back(second_side_top);
+	points_to_rotate.push_back(second_side_bottom);
 
 	//Now we will calculate the second piece of wire points
 	// Note we won't rotate wire_2_end because it's the start of the element
 	Point *wire_2_start = new Point(*second_side_top);
 	wire_2_start->move(0, -element_height / 2);
 	Point* wire_2_end = new Point(end_point);
-	points_to_rotate.push_back(&wire_2_start);
-	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
+	points_to_rotate.push_back(wire_2_start);
+	for (std::vector<Point*>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
 	{
 		rotate(**it,angle,wire_1_start);
 	}
@@ -125,59 +125,76 @@ Coil::Coil(Point start, Point end, float v) :Element(start, end, v,"mH"){
 
 };
 void Coil::draw(){
-	//{
-	//	vector<Point**>points_to_rotate;
-	//	float coil_turn_radius = 0.3;
-	//	int coil_turns = 4;
-	//	float wire_length = (length - (2 * coil_turns+2)*coil_turn_radius) / 2.0;
+	{
+		vector<Point*>points_to_rotate;
+		vector<Point*>coil_turns_centers;
+		float coil_turn_radius = 0.5;
+		int coil_turns = 4;
+		float wire_length = (length - ( coil_turns+1)*sqrt(2*pow(coil_turn_radius,2))) / 2.0;
 
-	//	//Now we will calculate the first piece of wire points
-	//	// Note we won't rotate wire_1_start because it's the start of the element
-	//	Point *wire_1_start = new Point(start_point);
-	//	Point* wire_1_end = new Point(start_point);
-	//	wire_1_end->move(wire_length, 0);
-	//	points_to_rotate.push_back(&wire_1_end);
+		//Now we will calculate the first piece of wire points
+		// Note we won't rotate wire_1_start because it's the start of the element
+		Point *wire_1_start = new Point(start_point);
+		Point* wire_1_end = new Point(start_point);
+		wire_1_end->move(wire_length, 0);
+		points_to_rotate.push_back(wire_1_end);
 
-	//	//Now we will calculate the first side of capacitor points
-	//	Point *coil_center = new Point(*wire_1_end);
-	//	coil_center->move(0, -radius);
+		//Now we will calculate the connect  part between wire and coil turns
+		Point *coil_first_turn_center = new Point(*wire_1_end);
+		coil_first_turn_center->move(0, -coil_turn_radius);
+		points_to_rotate.push_back(coil_first_turn_center);
 
-	//	draw_partial_circle(coil_center, radius, -0.25*PI, PI / 2);
+		// Now the turns centers
+		for (int i = 0; i < coil_turns; i++)
+		{
+			Point *coil_turn_center = new Point(*coil_first_turn_center);
+			float dx = sqrt(2*coil_turn_radius*coil_turn_radius);
+			coil_turn_center->move((i+1)*dx, 0);
+			points_to_rotate.push_back(coil_turn_center);
+			coil_turns_centers.push_back(coil_turn_center);
 
-	//	for (int i = 0; i < 5; i++)
-	//	{
+		}
+		// Now the last turn center
+		Point *coil_last_turn_center = new Point(*coil_turns_centers.back());
+		float dx = sqrt(2 * coil_turn_radius*coil_turn_radius);
+		coil_last_turn_center->move(dx, 0);	
+		points_to_rotate.push_back(coil_last_turn_center);
 
-	//		coil_center.move(dx, 0);
-	//		draw_partial_circle(coil_center, radius, -0.25*PI, 1.25*PI);
+		//Now we will calculate the last piece of wire points
+		// Note we won't rotate wire_2_end because it's the end of the element
+		Point *wire_2_start = new Point(*coil_last_turn_center);
+		wire_2_start->move(0, coil_turn_radius);
 
-	//	}
+		Point* wire_2_end = new Point(end_point);
+		points_to_rotate.push_back(wire_2_start);
 
-	//	//Now we will calculate the second piece of wire points
-	//	// Note we won't rotate wire_2_end because it's the start of the element
-	//	Point *wire_2_start = new Point(*circle_center);
-	//	wire_2_start->move(circle_radius, 0);
-	//	Point* wire_2_end = new Point(end_point);
-	//	points_to_rotate.push_back(&wire_2_start);
+		// Now we rotate them
+		for (std::vector<Point*>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
+		{
+			rotate(**it, angle, wire_1_start);
+		}
 
-	//	// Now we rotate them
-	//	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
-	//	{
-	//		rotate(**it, angle, wire_1_start);
-	//	}
+		// Now we will begin the Drawing..
+		Line wire_1(*wire_1_start, *wire_1_end);
+		cwin << wire_1 ;
+		draw_partial_circle(*coil_first_turn_center, coil_turn_radius, -PI/4 + angle,PI/2 +angle);
 
-	//	// Now we will begin the Drawing..
-	//	Line wire_1(*wire_1_start, *wire_1_end);
-	//	Circle source(*circle_center, circle_radius);
-	//	Line wire_2(*wire_2_start, *wire_2_end);
-	//	cwin << wire_1 << source << wire_2;
-	//};
+		for (std::vector<Point*>::iterator it = coil_turns_centers.begin(); it != coil_turns_centers.end(); ++it)
+		{
+			draw_partial_circle(**it, coil_turn_radius, -PI / 4 + angle, 1.25*PI  + angle);
+
+		}
+		draw_partial_circle(*coil_last_turn_center, coil_turn_radius, PI / 2 + angle, 1.25 * PI + angle);
+		Line wire_2(*wire_2_start, *wire_2_end);
+		cwin << wire_2;
+	};
 
 };
 VoltageSource::VoltageSource(Point start, Point end, float v) :Element(start, end, v,"V"){
 
 };
 void VoltageSource::draw(){
-	vector<Point**>points_to_rotate;
+	vector<Point*>points_to_rotate;
 	float circle_radius = 0.8;
 	float wire_length = (length - 2 * circle_radius) / 2.0;
 
@@ -186,12 +203,12 @@ void VoltageSource::draw(){
 	Point *wire_1_start = new Point(start_point);
 	Point* wire_1_end = new Point(start_point);
 	wire_1_end->move(wire_length, 0);
-	points_to_rotate.push_back(&wire_1_end);
+	points_to_rotate.push_back(wire_1_end);
 
 	//Now we will calculate the first side of capacitor points
 	Point* circle_center = new Point(*wire_1_end);
 	circle_center->move(circle_radius,0);
-	points_to_rotate.push_back(&circle_center);
+	points_to_rotate.push_back(circle_center);
 
 
 
@@ -200,10 +217,11 @@ void VoltageSource::draw(){
 	Point *wire_2_start = new Point(*circle_center);
 	wire_2_start->move(circle_radius,0);
 	Point* wire_2_end = new Point(end_point);
-	points_to_rotate.push_back(&wire_2_start);
+
+	points_to_rotate.push_back(wire_2_start);
 
 	// Now we rotate them
-	for (std::vector<Point**>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
+	for (std::vector<Point*>::iterator it = points_to_rotate.begin(); it != points_to_rotate.end(); ++it)
 	{
 		rotate(**it, angle, wire_1_start);
 	}
