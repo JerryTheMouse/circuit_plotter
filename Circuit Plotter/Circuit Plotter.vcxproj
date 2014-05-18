@@ -51,7 +51,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -80,12 +80,14 @@
   <ItemGroup>
     <ClCompile Include="ccc_msw.cpp" />
     <ClCompile Include="ccc_shap.cpp" />
+    <ClCompile Include="circuit.cpp" />
     <ClCompile Include="elements.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ccc_msw.h" />
     <ClInclude Include="ccc_shap.h" />
+    <ClInclude Include="circuit.h" />
     <ClInclude Include="elements.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
