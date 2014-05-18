@@ -64,7 +64,7 @@ Resistance::Resistance(Point start,Point end, float v) :Element(start,end,v,"Koh
 };
 void Resistance::draw() {
 
-	{
+	
 		vector<Point*>points_to_rotate;
 		float element_width = 0.8;
 		float element_height = 1.0;
@@ -110,8 +110,21 @@ void Resistance::draw() {
 
 		Line wire_2(*wire_2_start, *wire_2_end);
 		cwin << wire_1 << l1<<l2 << l3<< wire_2;
+		// Now we will write the value
+		string s_value = to_string(get_value());
+		s_value = s_value.substr(0, s_value.find('.') + 3);
 
-	};
+		Point mid_point((get_start_point().get_x() + get_end_point().get_x()) / 2.0, (get_start_point().get_y() + get_end_point().get_y()) / 2.0);
+		double msg_dy = -0.1;
+		double msg_dx = -0.1;
+		if (abs(angle) <= 3 * PI / 4 && abs(angle) >= PI / 4)
+			msg_dx = element_width + 0.2;
+		else msg_dy = element_height + 0.2;
+		Point msg_point(mid_point);
+		msg_point.move(msg_dx, msg_dy);
+		Message m(msg_point, s_value + " " + get_unit());
+		cwin << m;
+	
 };
 
 Capacitor::Capacitor(Point start, Point end, float v) :Element(start, end, v, "nF"){
@@ -168,6 +181,21 @@ void Capacitor::draw(){
 	Line second_side(*second_side_top, *second_side_bottom);
 	Line wire_2(*wire_2_start, *wire_2_end);
 	cwin << wire_1 << first_side << second_side << wire_2;
+
+	// Now we will write the value
+	string s_value = to_string(get_value());
+	s_value = s_value.substr(0, s_value.find('.') + 3);
+
+	Point mid_point((get_start_point().get_x() + get_end_point().get_x()) / 2.0, (get_start_point().get_y() + get_end_point().get_y()) / 2.0);
+	double msg_dy = -0.1;
+	double msg_dx = -0.1;
+	if (abs(angle) <= 3 * PI / 4 && abs(angle) >= PI / 4)
+		msg_dx = element_width + 0.2;
+	else msg_dy = element_height + 0.2;
+	Point msg_point(mid_point);
+	msg_point.move(msg_dx, msg_dy);
+	Message m(msg_point, s_value + " " + get_unit());
+	cwin << m;
 
 };
 Coil::Coil(Point start, Point end, float v) :Element(start, end, v,"mH"){
@@ -239,7 +267,20 @@ void Coil::draw(){
 		draw_partial_circle(*coil_last_turn_center, coil_turn_radius, PI / 2 + angle, 1.25 * PI + angle);
 		Line wire_2(*wire_2_start, *wire_2_end);
 		cwin << wire_2;
+		// Now we will write the value
+		string s_value = to_string(get_value());
+		s_value = s_value.substr(0, s_value.find('.') + 3);
 
+		Point mid_point((get_start_point().get_x() + get_end_point().get_x()) / 2.0, (get_start_point().get_y() + get_end_point().get_y()) / 2.0);
+		double msg_dy = -0.1;
+		double msg_dx = -0.1;
+		if (abs(angle) <= 3 * PI / 4 && abs(angle) >= PI / 4)
+			msg_dx = coil_turn_radius + 0.5;
+		else msg_dy = coil_turn_radius + 0.5;
+		Point msg_point(mid_point);
+		msg_point.move(msg_dx, msg_dy);
+		Message m(msg_point, s_value + " " + get_unit());
+		cwin << m;
 	};
 
 };
@@ -289,5 +330,20 @@ void VoltageSource::draw(){
 	Line wire_2(*wire_2_start, *wire_2_end);
 	cwin << wire_1 << source  << wire_2;
 
+
+	// Now we will write the value
+	string s_value = to_string(get_value());
+	s_value = s_value.substr(0, s_value.find('.') + 3);
+
+	Point mid_point((get_start_point().get_x() + get_end_point().get_x()) / 2.0, (get_start_point().get_y() + get_end_point().get_y()) / 2.0);
+	double msg_dy = -0.1;
+	double msg_dx = -0.1;
+	if (abs(angle) <= 3 * PI / 4 && abs(angle) >= PI / 4)
+		msg_dx = circle_radius + 0.5;
+	else msg_dy = circle_radius + 0.5;
+	Point msg_point(mid_point);
+	msg_point.move(msg_dx, msg_dy);
+	Message m(msg_point, s_value + " " + get_unit());
+	cwin << m;
 
 };

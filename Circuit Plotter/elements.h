@@ -1,6 +1,6 @@
 #ifndef ELEMENTS_H
 #define ELEMENTS_H
-#define PI 3.1428571428571428571
+#define PI 3.14285714
 
 #include "ccc_msw.h"
 
