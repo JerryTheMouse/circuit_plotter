@@ -7,6 +7,7 @@ int ccc_win_main(){
 	string input = cwin.get_string("");
 	cwin.clear();
 	Circuit a(input);
+	Circuit b(input);
 	}
 	return 0;
 }
